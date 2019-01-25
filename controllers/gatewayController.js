@@ -132,16 +132,23 @@ async function addGatewayDevice(req,res){
     }) 
 
    if(gatewayObject){
-       if(deviceObject){
-            gatewayObject.peripheralDevices.push(deviceObject)
-            gatewayObject.save((err,gatewayStored) => {
-                if (err)
-                   return res.status(500).send({message:`error occurred while saving gateway:${err}`})
-                else 
-                   return res.status(200).send({gateway:gatewayStored})         
-            })
-       }
-       else  return res.status(500).send({message:`Device: ${deviceId} not found`})
+       if(gatewayObject.peripheralDevices.length < 10){
+            if(deviceObject){
+                if (gatewayObject.peripheralDevices.findIndex(x => x == deviceId) !== -1)
+                   return res.status(500).send({message:`Device: ${deviceId} exists at the gateway`})
+                else{ 
+                    gatewayObject.peripheralDevices.push(deviceObject)
+                    gatewayObject.save((err,gatewayStored) => {
+                        if (err)
+                        return res.status(500).send({message:`error occurred while saving gateway:${err}`})
+                        else 
+                        return res.status(200).send({gateway:gatewayStored})         
+                    })
+                }  
+            }
+            else  return res.status(500).send({message:`Device: ${deviceId} not found`})
+        }    
+        else  return res.status(500).send({message:'Only 10 devices allowed per gateway'})
    }
    else  return res.status(500).send({message:`Gateway: ${gatewayId} not found`})   
    
@@ -168,6 +175,8 @@ async function removeGatewayDevice(req,res){
                    return res.status(200).send({gateway:gatewayStored})         
             })       
        }
+       else  return res.status(500).send({message:`Device: ${deviceId} doesn't exists at the gateway`})   
+
     }
    else  return res.status(500).send({message:`Gateway: ${gatewayId} not found`})   
    
