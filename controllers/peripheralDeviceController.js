@@ -35,6 +35,14 @@ function savePeripheralDevice(req,res){
 }
 
 function updatePeripheralDevice(req,res){
+      let deviceId = req.params.deviceId
+    let update = req.body
+       
+    peripheralDevice.findOneAndUpdate({_id:deviceId},update,{new: true},(err,deviceUpdate) =>{
+        if(err) return res.status(500).send({message:`Error occurred while updating:${err}`})
+        else
+          return res.status(200).send({device:deviceUpdate})
+    })
 
 }
 

@@ -91,7 +91,14 @@ function  saveGateway(req,res){
 
 
 function updateGateway(req,res){
-
+    let gatewayId = req.params.gatewayId
+    let update = req.body
+       
+    gateway.findOneAndUpdate({_id:gatewayId},update,{new: true},(err,gatewayUpdate) =>{
+        if(err) return res.status(500).send({message:`Error occurred while updating:${err}`})
+        else
+          return res.status(200).send({gateway:gatewayUpdate})
+    })
 }
 
 function deleteGateway(req,res){
